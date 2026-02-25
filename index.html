@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oxford Saïd MBA — Kira Interview Simulator</title>
+<style>
+  :root {
+    --oxford-blue: #002147;
+    --oxford-light: #1a3a5c;
+    --gold: #c4a55a;
+    --gold-light: #d4b96a;
+    --bg: #0a0f1a;
+    --card-bg: #111827;
+    --text: #e5e7eb;
+    --text-muted: #9ca3af;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --border: #1f2937;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Georgia', 'Times New Roman', serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, var(--oxford-blue), var(--oxford-light));
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--gold);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .crest {
+    width: 48px;
+    height: 48px;
+    border: 2px solid var(--gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: var(--gold);
+    font-weight: bold;
+  }
+
+  .header-title h1 {
+    font-size: 20px;
+    color: #fff;
+    letter-spacing: 1px;
+  }
+
+  .header-title p {
+    font-size: 12px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .progress-info {
+    text-align: right;
+    color: var(--text-muted);
+    font-size: 14px;
+    font-family: 'Helvetica Neue', sans-serif;
+  }
+
+  .progress-info .current-q {
+    font-size: 24px;
+    color: var(--gold);
+    font-weight: bold;
+  }
+
+  /* Welcome Screen */
+  .screen {
+    display: none;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  .screen.active { display: block; }
+
+  .welcome-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 48px;
+    text-align: center;
+  }
+
+  .welcome-card h2 {
+    font-size: 32px;
+    color: #fff;
+    margin-bottom: 8px;
+  }
+
+  .welcome-card .subtitle {
+    color: var(--gold);
+    font-size: 16px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .rules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin: 32px 0;
+    text-align: left;
+  }
+
+  .rule-item {
+    background: rgba(0,33,71,0.3);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .rule-item .icon {
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+
+  .rule-item h4 {
+    color: var(--gold);
+    font-size: 14px;
+    margin-bottom: 4px;
+    font-family: 'Helvetica Neue', sans-serif;
+  }
+
+  .rule-item p {
+    color: var(--text-muted);
+    font-size: 13px;
+    font-family: 'Helvetica Neue', sans-serif;
+  }
+
+  .category-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin: 24px 0;
+  }
+
+  .cat-tag {
+    background: rgba(196,165,90,0.15);
+    border: 1px solid rgba(196,165,90,0.3);
+    color: var(--gold);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-family: 'Helvetica Neue', sans-serif;
+  }
+
+  .btn {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 14px 40px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    letter-spacing: 1px;
+  }
+
+  .btn-primary {
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color: var(--oxford-blue);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(196,165,90,0.3);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    border: 2px solid var(--gold);
+    color: var(--gold);
+  }
+
+  .btn-secondary:hover {
+    background: rgba(196,165,90,0.1);
+  }
+
+  .btn-small {
+    padding: 8px 20px;
+    font-size: 13px;
+  }
+
+  /* Interview Screen */
+  .interview-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .question-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .question-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--oxford-blue), var(--gold));
+  }
+
+  .q-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    font-family: 'Helvetica Neue', sans-serif;
+  }
+
+  .q-category {
+    background: rgba(196,165,90,0.15);
+    color: var(--gold);
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .q-number {
+    color: var(--text-muted);
+    font-size: 13px;
+  }
+
+  .q-type {
+    margin-left: auto;
+    font-size: 12px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-weight: 600;
+  }
+
+  .q-type.video { background: rgba(239,68,68,0.15); color: #ef4444; }
+  .q-type.written { background: rgba(59,130,246,0.15); color: #3b82f6; }
+
+  .question-text {
+    font-size: 22px;
+    line-height: 1.6;
+    color: #fff;
+    margin-bottom: 24px;
+  }
+
+  /* Timer */
+  .timer-section {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 24px;
+    font-family: 'Helvetica Neue', sans-serif;
+  }
+
+  .timer-display {
+    font-size: 48px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    min-width: 120px;
+    text-align: center;
+  }
+
+  .timer-display.prep { color: var(--warning); }
+  .timer-display.answer { color: var(--success); }
+  .timer-display.danger { color: var(--danger); animation: pulse 0.5s infinite; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .timer-bar {
+    flex: 1;
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .timer-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.1s linear;
+  }
+
+  .timer-bar-fill.prep { background: var(--warning); }
+  .timer-bar-fill.answer { background: var(--success); }
+  .timer-bar-fill.danger { background: var(--danger); }
+
+  .timer-label {
+    font-size: 14px;
+    color: var(--text-muted);
+    font-weight: 600;
+    min-width: 100px;
+  }
+
+  /* Answer Area */
+  .answer-area {
+    margin-top: 16px;
+  }
+
+  .answer-area textarea {
+    width: 100%;
+    min-height: 180px;
+    background: rgba(0,33,71,0.2);
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    color: var(--text);
+    font-size: 16px;
+    font-family: 'Georgia', serif;
+    line-height: 1.8;
+    resize: vertical;
+    transition: border-color 0.3s;
+  }
+
+  .answer-area textarea:focus {
+    outline: none;
+    border-color: var(--gold);
+  }
+
+  .answer-area textarea:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .answer-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+  }
+
+  .word-count {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  /* Feedback */
+  .feedback-card {
+    background: rgba(0,33,71,0.2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 20px;
+    display: none;
+  }
+
+  .feedback-card.show { display: block; }
+
+  .feedback-card h4 {
+    color: var(--gold);
+    margin-bottom: 12px;
+    font-family: 'Helvetica Neue', sans-serif;
+  }
+
+  .score-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+
+  .score-item {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 16px;
+    text-align: center;
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .score-item .label {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .score-item .value {
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--gold);
+    margin-top: 4px;
+  }
+
+  .feedback-text {
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.8;
+    font-family: 'Helvetica Neue', sans-serif;
+  }
+
+  .feedback-text strong { color: var(--text); }
+
+  .tips-list {
+    list-style: none;
+    margin-top: 12px;
+  }
+
+  .tips-list li {
+    padding: 6px 0;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-family: 'Helvetica Neue', sans-serif;
+  }
+
+  .tips-list li::before {
+    content: '→ ';
+    color: var(--gold);
+  }
+
+  /* Progress Bar */
+  .overall-progress {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 24px;
+    margin-bottom: 24px;
+    font-family: 'Helvetica Neue', sans-serif;
+  }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .progress-track {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--oxford-blue), var(--gold));
+    border-radius: 3px;
+    transition: width 0.5s ease;
+  }
+
+  /* Result Screen */
+  .result-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 48px;
+  }
+
+  .result-card h2 {
+    text-align: center;
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+
+  .result-card .result-subtitle {
+    text-align: center;
+    color: var(--gold);
+    font-size: 14px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 32px;
+  }
+
+  .final-score {
+    text-align: center;
+    margin: 24px 0;
+  }
+
+  .final-score .big-score {
+    font-size: 72px;
+    font-weight: bold;
+    color: var(--gold);
+  }
+
+  .final-score .max-score {
+    font-size: 24px;
+    color: var(--text-muted);
+  }
+
+  .dimension-scores {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin: 32px 0;
+  }
+
+  .dim-item {
+    background: rgba(0,33,71,0.2);
+    border-radius: 8px;
+    padding: 16px;
+  }
+
+  .dim-item .dim-label {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+  }
+
+  .dim-item .dim-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-bottom: 4px;
+  }
+
+  .dim-item .dim-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 3px;
+  }
+
+  .dim-item .dim-score {
+    font-family: 'Helvetica Neue', sans-serif;
+    font-size: 13px;
+    color: var(--gold);
+    text-align: right;
+  }
+
+  .result-summary {
+    background: rgba(0,33,71,0.2);
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 24px;
+    font-family: 'Helvetica Neue', sans-serif;
+    color: var(--text-muted);
+    font-size: 14px;
+    line-height: 1.8;
+  }
+
+  .result-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+
+  /* Responsive */
+  @media (max-width: 640px) {
+    .header { padding: 12px 16px; }
+    .header-title h1 { font-size: 16px; }
+    .welcome-card { padding: 24px; }
+    .question-card { padding: 24px; }
+    .question-text { font-size: 18px; }
+    .timer-display { font-size: 36px; }
+    .result-card { padding: 24px; }
+    .final-score .big-score { font-size: 48px; }
+  }
+
+  /* Category filter */
+  .filter-section {
+    margin: 24px 0;
+    text-align: center;
+  }
+
+  .filter-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 12px;
+    font-family: 'Helvetica Neue', sans-serif;
+    cursor: pointer;
+    margin: 4px;
+    transition: all 0.2s;
+  }
+
+  .filter-btn.active,
+  .filter-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold);
+    background: rgba(196,165,90,0.1);
+  }
+
+  /* Skip confirmation */
+  .skip-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+  }
+
+  .skip-modal.show { display: flex; }
+
+  .skip-modal-content {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 400px;
+    text-align: center;
+  }
+
+  .skip-modal-content h3 {
+    margin-bottom: 12px;
+    color: var(--warning);
+  }
+
+  .skip-modal-content p {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin-bottom: 20px;
+    font-family: 'Helvetica Neue', sans-serif;
+  }
+
+  .skip-modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <div class="crest">Ox</div>
+    <div class="header-title">
+      <h1>Oxford Saïd Business School</h1>
+      <p>Kira Interview Simulator</p>
+    </div>
+  </div>
+  <div class="progress-info" id="headerProgress" style="display:none;">
+    <span>Question</span><br>
+    <span class="current-q" id="headerQ">1</span> / 100
+  </div>
+</div>
+
+<!-- Welcome Screen -->
+<div class="screen active" id="welcomeScreen">
+  <div class="welcome-card">
+    <h2>Kira Interview Simulator</h2>
+    <p class="subtitle">Oxford MBA Admissions Practice</p>
+    <p style="color:var(--text-muted); font-family:'Helvetica Neue',sans-serif; font-size:15px; max-width:600px; margin:0 auto 24px;">
+      Practice with 100 real-style interview questions covering all major MBA admissions topics. Timed responses simulate the actual Kira Talent platform experience.
+    </p>
+
+    <div class="rules-grid">
+      <div class="rule-item">
+        <div class="icon">⏱</div>
+        <h4>Preparation</h4>
+        <p>20 seconds to read and think before answering</p>
+      </div>
+      <div class="rule-item">
+        <div class="icon">🎙</div>
+        <h4>Response Time</h4>
+        <p>90 seconds to type your answer</p>
+      </div>
+      <div class="rule-item">
+        <div class="icon">📝</div>
+        <h4>100 Questions</h4>
+        <p>Covering 9 major categories</p>
+      </div>
+      <div class="rule-item">
+        <div class="icon">🎯</div>
+        <h4>AI Feedback</h4>
+        <p>Instant scoring and improvement tips</p>
+      </div>
+    </div>
+
+    <div class="category-tags">
+      <span class="cat-tag">Motivation & Fit</span>
+      <span class="cat-tag">Leadership</span>
+      <span class="cat-tag">Teamwork</span>
+      <span class="cat-tag">Ethics</span>
+      <span class="cat-tag">Career Goals</span>
+      <span class="cat-tag">Self-awareness</span>
+      <span class="cat-tag">Business & Current Affairs</span>
+      <span class="cat-tag">Creative & Situational</span>
+      <span class="cat-tag">Diversity & Global</span>
+    </div>
+
+    <p style="color:var(--text-muted); font-size:13px; font-family:'Helvetica Neue',sans-serif; margin-bottom: 24px;">
+      Answer in <strong style="color:#fff;">English</strong> to simulate the real interview environment.
+    </p>
+
+    <button class="btn btn-primary" onclick="startInterview()">Begin Interview</button>
+  </div>
+</div>
+
+<!-- Interview Screen -->
+<div class="screen" id="interviewScreen">
+  <div class="overall-progress">
+    <div class="progress-header">
+      <span>Overall Progress</span>
+      <span id="progressPercent">0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progressFill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <div class="interview-container">
+    <div class="question-card">
+      <div class="q-meta">
+        <span class="q-category" id="qCategory">Motivation & Fit</span>
+        <span class="q-number" id="qNumber">Question 1 of 100</span>
+        <span class="q-type video" id="qType">VIDEO</span>
+      </div>
+
+      <div class="question-text" id="questionText">
+        Why have you chosen the Oxford Saïd MBA?
+      </div>
+
+      <div class="timer-section">
+        <div class="timer-label" id="timerLabel">PREPARATION</div>
+        <div class="timer-display prep" id="timerDisplay">0:20</div>
+        <div class="timer-bar">
+          <div class="timer-bar-fill prep" id="timerBarFill" style="width:100%"></div>
+        </div>
+      </div>
+
+      <div class="answer-area">
+        <textarea id="answerInput" placeholder="Your answer will appear here..." disabled></textarea>
+        <div class="answer-actions">
+          <span class="word-count" id="wordCount">0 words</span>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-secondary btn-small" id="skipBtn" onclick="showSkipModal()">Skip</button>
+            <button class="btn btn-primary btn-small" id="submitBtn" onclick="submitAnswer()" disabled>Submit Answer</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="feedback-card" id="feedbackCard">
+        <h4>Feedback</h4>
+        <div class="score-row" id="scoreRow"></div>
+        <div class="feedback-text" id="feedbackText"></div>
+        <ul class="tips-list" id="tipsList"></ul>
+        <div style="text-align:right;margin-top:16px;">
+          <button class="btn btn-primary btn-small" id="nextBtn" onclick="nextQuestion()">Next Question →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Result Screen -->
+<div class="screen" id="resultScreen">
+  <div class="result-card">
+    <h2>Interview Complete</h2>
+    <p class="result-subtitle">Performance Summary</p>
+
+    <div class="final-score">
+      <span class="big-score" id="finalScore">0</span>
+      <span class="max-score"> / 100</span>
+    </div>
+
+    <div class="dimension-scores" id="dimensionScores"></div>
+
+    <div class="result-summary" id="resultSummary"></div>
+
+    <div class="result-actions">
+      <button class="btn btn-primary" onclick="restartInterview()">Restart Interview</button>
+      <button class="btn btn-secondary" onclick="reviewAnswers()">Review Answers</button>
+    </div>
+  </div>
+
+  <!-- Review Section -->
+  <div id="reviewSection" style="margin-top:24px; display:none;"></div>
+</div>
+
+<!-- Skip Modal -->
+<div class="skip-modal" id="skipModal">
+  <div class="skip-modal-content">
+    <h3>Skip this question?</h3>
+    <p>Skipped questions will receive a score of 0. In a real Kira interview, you cannot skip questions.</p>
+    <div class="skip-modal-actions">
+      <button class="btn btn-secondary btn-small" onclick="hideSkipModal()">Cancel</button>
+      <button class="btn btn-primary btn-small" onclick="confirmSkip()">Skip</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ====== QUESTION BANK (100 Questions) ======
+const questions = [
+  // --- Motivation & Fit (1-12) ---
+  { id:1, category:"Motivation & Fit", type:"video", text:"Why have you chosen the Oxford Saïd MBA, and how does it align with your long-term career vision?" },
+  { id:2, category:"Motivation & Fit", type:"video", text:"What specific aspect of the Oxford MBA programme excites you the most, and why?" },
+  { id:3, category:"Motivation & Fit", type:"written", text:"Describe a moment that made you realise an MBA was the right next step in your career." },
+  { id:4, category:"Motivation & Fit", type:"video", text:"How do you plan to contribute to the Oxford Saïd community during your MBA?" },
+  { id:5, category:"Motivation & Fit", type:"video", text:"Oxford emphasises 'doing well by doing good.' How does this philosophy resonate with your personal values?" },
+  { id:6, category:"Motivation & Fit", type:"written", text:"What would you bring to a study group that no one else could?" },
+  { id:7, category:"Motivation & Fit", type:"video", text:"Which Oxford Saïd initiative or centre are you most interested in engaging with, and why?" },
+  { id:8, category:"Motivation & Fit", type:"video", text:"How will the Oxford MBA specifically help you bridge the gap between where you are now and where you want to be?" },
+  { id:9, category:"Motivation & Fit", type:"video", text:"If you could have dinner with one Oxford alumnus, who would it be and what would you discuss?" },
+  { id:10, category:"Motivation & Fit", type:"written", text:"Describe how your background and experiences have prepared you for the rigour of the Oxford MBA." },
+  { id:11, category:"Motivation & Fit", type:"video", text:"What does 'entrepreneurial spirit' mean to you, and how have you demonstrated it?" },
+  { id:12, category:"Motivation & Fit", type:"video", text:"Why now? What makes this the right time in your career for an MBA?" },
+
+  // --- Leadership (13-27) ---
+  { id:13, category:"Leadership", type:"video", text:"Tell me about a time you led a team through a significant challenge. What was the outcome?" },
+  { id:14, category:"Leadership", type:"video", text:"Describe a situation where you had to lead without formal authority. How did you influence others?" },
+  { id:15, category:"Leadership", type:"written", text:"What is your leadership philosophy, and how has it evolved over time?" },
+  { id:16, category:"Leadership", type:"video", text:"Tell me about a time your leadership approach failed. What did you learn?" },
+  { id:17, category:"Leadership", type:"video", text:"How do you handle disagreements within a team you are leading?" },
+  { id:18, category:"Leadership", type:"video", text:"Describe a bold decision you made as a leader that others initially opposed." },
+  { id:19, category:"Leadership", type:"written", text:"Who is a leader you admire and what qualities of theirs would you like to develop?" },
+  { id:20, category:"Leadership", type:"video", text:"Tell me about a time you had to make an unpopular decision. How did you communicate it?" },
+  { id:21, category:"Leadership", type:"video", text:"How do you motivate team members who are disengaged or underperforming?" },
+  { id:22, category:"Leadership", type:"video", text:"Describe a time you empowered someone on your team and the impact it had." },
+  { id:23, category:"Leadership", type:"video", text:"How do you balance being decisive with being inclusive of others' opinions?" },
+  { id:24, category:"Leadership", type:"written", text:"What is the most important lesson you have learned about leadership in your career?" },
+  { id:25, category:"Leadership", type:"video", text:"Tell me about a crisis you managed. How did you keep your team focused?" },
+  { id:26, category:"Leadership", type:"video", text:"How do you approach delegating tasks to team members with different skill levels?" },
+  { id:27, category:"Leadership", type:"video", text:"Describe a time you had to adapt your leadership style to a new cultural context." },
+
+  // --- Teamwork & Collaboration (28-39) ---
+  { id:28, category:"Teamwork & Collaboration", type:"video", text:"Describe a time you worked with a difficult team member. How did you handle the situation?" },
+  { id:29, category:"Teamwork & Collaboration", type:"video", text:"Tell me about a successful team project. What was your specific role and contribution?" },
+  { id:30, category:"Teamwork & Collaboration", type:"written", text:"How do you build trust within a new team?" },
+  { id:31, category:"Teamwork & Collaboration", type:"video", text:"Describe a situation where a team you were on failed to achieve its goal. What went wrong?" },
+  { id:32, category:"Teamwork & Collaboration", type:"video", text:"How do you ensure all voices are heard in a team setting, especially quieter members?" },
+  { id:33, category:"Teamwork & Collaboration", type:"video", text:"Tell me about a time you had to compromise your ideas for the benefit of the team." },
+  { id:34, category:"Teamwork & Collaboration", type:"video", text:"Describe a cross-functional collaboration you participated in. What challenges arose?" },
+  { id:35, category:"Teamwork & Collaboration", type:"written", text:"What role do you typically play in a team, and how do you know when to step up or step back?" },
+  { id:36, category:"Teamwork & Collaboration", type:"video", text:"How do you handle a situation where team members have conflicting priorities?" },
+  { id:37, category:"Teamwork & Collaboration", type:"video", text:"Tell me about a time you helped resolve a conflict between two colleagues." },
+  { id:38, category:"Teamwork & Collaboration", type:"video", text:"Describe your approach to giving constructive feedback to peers." },
+  { id:39, category:"Teamwork & Collaboration", type:"video", text:"How do you maintain team morale during a long and stressful project?" },
+
+  // --- Ethical Dilemmas (40-49) ---
+  { id:40, category:"Ethical Dilemmas", type:"video", text:"Describe a time you faced an ethical dilemma at work. How did you resolve it?" },
+  { id:41, category:"Ethical Dilemmas", type:"video", text:"Your manager asks you to misrepresent data in a client presentation. What do you do?" },
+  { id:42, category:"Ethical Dilemmas", type:"written", text:"A colleague confides that they have been inflating their expense reports. How do you respond?" },
+  { id:43, category:"Ethical Dilemmas", type:"video", text:"You discover that a profitable product your company sells may cause environmental harm. What action do you take?" },
+  { id:44, category:"Ethical Dilemmas", type:"video", text:"How would you handle a situation where following company policy conflicts with doing what you believe is right?" },
+  { id:45, category:"Ethical Dilemmas", type:"video", text:"A client offers you a gift that exceeds your company's gift policy. What do you do?" },
+  { id:46, category:"Ethical Dilemmas", type:"written", text:"You notice a bias in your company's hiring process that disadvantages certain candidates. How do you address it?" },
+  { id:47, category:"Ethical Dilemmas", type:"video", text:"Your team is under pressure to cut corners on quality to meet a deadline. How do you respond?" },
+  { id:48, category:"Ethical Dilemmas", type:"video", text:"You overhear a senior leader sharing confidential information inappropriately. What do you do?" },
+  { id:49, category:"Ethical Dilemmas", type:"video", text:"How do you weigh short-term business profitability against long-term social responsibility?" },
+
+  // --- Career & Goals (50-59) ---
+  { id:50, category:"Career & Goals", type:"video", text:"Where do you see yourself five years after completing the MBA?" },
+  { id:51, category:"Career & Goals", type:"video", text:"What is the biggest career risk you have taken, and what was the result?" },
+  { id:52, category:"Career & Goals", type:"written", text:"Describe your short-term and long-term career goals. How are they connected?" },
+  { id:53, category:"Career & Goals", type:"video", text:"What industry or sector are you most passionate about, and why?" },
+  { id:54, category:"Career & Goals", type:"video", text:"If your original career plan doesn't work out after the MBA, what is your backup plan?" },
+  { id:55, category:"Career & Goals", type:"video", text:"What skill gap do you most want to address during the MBA?" },
+  { id:56, category:"Career & Goals", type:"written", text:"Describe a career setback and how it shaped your current professional trajectory." },
+  { id:57, category:"Career & Goals", type:"video", text:"How do you define professional success, and has that definition changed over time?" },
+  { id:58, category:"Career & Goals", type:"video", text:"What impact do you want to have on your industry or community in the next decade?" },
+  { id:59, category:"Career & Goals", type:"video", text:"If you could start any company tomorrow, what problem would it solve?" },
+
+  // --- Self-awareness & Growth (60-69) ---
+  { id:60, category:"Self-awareness & Growth", type:"video", text:"What is your greatest professional weakness, and what are you doing to address it?" },
+  { id:61, category:"Self-awareness & Growth", type:"video", text:"Describe a piece of critical feedback you received. How did you respond?" },
+  { id:62, category:"Self-awareness & Growth", type:"written", text:"What has been your most significant personal growth experience in the last three years?" },
+  { id:63, category:"Self-awareness & Growth", type:"video", text:"How do you handle failure or rejection?" },
+  { id:64, category:"Self-awareness & Growth", type:"video", text:"What would your closest colleague say is your biggest blind spot?" },
+  { id:65, category:"Self-awareness & Growth", type:"video", text:"Describe a time you stepped outside your comfort zone. What did you learn?" },
+  { id:66, category:"Self-awareness & Growth", type:"written", text:"How do you manage stress and maintain work-life balance?" },
+  { id:67, category:"Self-awareness & Growth", type:"video", text:"What is something you believed strongly five years ago that you have since changed your mind about?" },
+  { id:68, category:"Self-awareness & Growth", type:"video", text:"How do you continue to learn and develop professionally outside of formal education?" },
+  { id:69, category:"Self-awareness & Growth", type:"video", text:"If you could change one decision in your career, what would it be and why?" },
+
+  // --- Business & Current Affairs (70-81) ---
+  { id:70, category:"Business & Current Affairs", type:"video", text:"What do you think is the biggest challenge facing global businesses today?" },
+  { id:71, category:"Business & Current Affairs", type:"video", text:"How is artificial intelligence transforming your industry, and what opportunities does it create?" },
+  { id:72, category:"Business & Current Affairs", type:"written", text:"Pick a company you admire. What makes their strategy effective?" },
+  { id:73, category:"Business & Current Affairs", type:"video", text:"How should businesses balance profitability with sustainability?" },
+  { id:74, category:"Business & Current Affairs", type:"video", text:"What emerging market or trend do you find most exciting, and why?" },
+  { id:75, category:"Business & Current Affairs", type:"video", text:"Describe a recent business news story that caught your attention and explain its implications." },
+  { id:76, category:"Business & Current Affairs", type:"written", text:"If you were CEO of a struggling company, what would be your first three priorities?" },
+  { id:77, category:"Business & Current Affairs", type:"video", text:"How do you think the role of business in society has changed in the last decade?" },
+  { id:78, category:"Business & Current Affairs", type:"video", text:"What is your view on the future of remote work and its impact on organisational culture?" },
+  { id:79, category:"Business & Current Affairs", type:"video", text:"How should companies approach digital transformation in traditional industries?" },
+  { id:80, category:"Business & Current Affairs", type:"video", text:"What role should businesses play in addressing climate change?" },
+  { id:81, category:"Business & Current Affairs", type:"video", text:"Discuss a disruptive innovation that has fundamentally changed consumer behaviour." },
+
+  // --- Creative & Situational (82-91) ---
+  { id:82, category:"Creative & Situational", type:"video", text:"If you had unlimited resources, what problem in the world would you solve first?" },
+  { id:83, category:"Creative & Situational", type:"video", text:"You are given £1 million to start a social enterprise. Describe your plan." },
+  { id:84, category:"Creative & Situational", type:"written", text:"Imagine you are advising a startup founder who is about to run out of funding. What do you recommend?" },
+  { id:85, category:"Creative & Situational", type:"video", text:"You arrive at a new job and discover your team has very low morale. What do you do in your first week?" },
+  { id:86, category:"Creative & Situational", type:"video", text:"Describe a creative solution you developed for a problem others considered unsolvable." },
+  { id:87, category:"Creative & Situational", type:"video", text:"You are leading a product launch and a critical supplier fails two weeks before the deadline. What do you do?" },
+  { id:88, category:"Creative & Situational", type:"written", text:"If you could implement one policy change in your country, what would it be and why?" },
+  { id:89, category:"Creative & Situational", type:"video", text:"You are tasked with entering a new international market with no existing contacts. How do you begin?" },
+  { id:90, category:"Creative & Situational", type:"video", text:"A key client threatens to leave unless you match a competitor's price that would result in a loss. How do you respond?" },
+  { id:91, category:"Creative & Situational", type:"video", text:"Pitch an innovative business idea in 90 seconds." },
+
+  // --- Diversity & Global Perspective (92-100) ---
+  { id:92, category:"Diversity & Global Perspective", type:"video", text:"How has your cultural background shaped your professional perspective?" },
+  { id:93, category:"Diversity & Global Perspective", type:"video", text:"Describe an experience working with people from a very different background. What did you learn?" },
+  { id:94, category:"Diversity & Global Perspective", type:"written", text:"Why is diversity important in a business school classroom, and how will you contribute to it?" },
+  { id:95, category:"Diversity & Global Perspective", type:"video", text:"Describe a time you had to adapt your communication style for a different cultural audience." },
+  { id:96, category:"Diversity & Global Perspective", type:"video", text:"What global issue do you feel most passionately about, and what have you done about it?" },
+  { id:97, category:"Diversity & Global Perspective", type:"video", text:"How do you approach understanding perspectives that are very different from your own?" },
+  { id:98, category:"Diversity & Global Perspective", type:"written", text:"Describe a situation where you advocated for inclusion or equity in your workplace." },
+  { id:99, category:"Diversity & Global Perspective", type:"video", text:"How would you leverage the international diversity of an Oxford MBA cohort?" },
+  { id:100, category:"Diversity & Global Perspective", type:"video", text:"What unique perspective from your country or region would you bring to global business discussions?" },
+];
+
+// ====== STATE ======
+let currentIndex = 0;
+let phase = 'idle'; // idle, prep, answer, feedback
+let timer = null;
+let timeLeft = 0;
+let totalTime = 0;
+let answers = [];
+let scores = [];
+
+const PREP_TIME = 20;
+const ANSWER_TIME = 90;
+
+// ====== FUNCTIONS ======
+function startInterview() {
+  currentIndex = 0;
+  answers = [];
+  scores = [];
+  document.getElementById('welcomeScreen').classList.remove('active');
+  document.getElementById('interviewScreen').classList.add('active');
+  document.getElementById('resultScreen').classList.remove('active');
+  document.getElementById('headerProgress').style.display = 'block';
+  loadQuestion();
+}
+
+function restartInterview() {
+  document.getElementById('resultScreen').classList.remove('active');
+  document.getElementById('welcomeScreen').classList.add('active');
+  document.getElementById('headerProgress').style.display = 'none';
+  document.getElementById('reviewSection').style.display = 'none';
+}
+
+function loadQuestion() {
+  const q = questions[currentIndex];
+  document.getElementById('qCategory').textContent = q.category;
+  document.getElementById('qNumber').textContent = `Question ${q.id} of 100`;
+  document.getElementById('questionText').textContent = q.text;
+  document.getElementById('headerQ').textContent = q.id;
+
+  const qType = document.getElementById('qType');
+  if (q.type === 'video') {
+    qType.textContent = 'VIDEO';
+    qType.className = 'q-type video';
+  } else {
+    qType.textContent = 'WRITTEN';
+    qType.className = 'q-type written';
+  }
+
+  // Update progress
+  const pct = Math.round((currentIndex / 100) * 100);
+  document.getElementById('progressPercent').textContent = pct + '%';
+  document.getElementById('progressFill').style.width = pct + '%';
+
+  // Reset
+  const input = document.getElementById('answerInput');
+  input.value = '';
+  input.disabled = true;
+  input.placeholder = 'Preparation phase — read the question carefully...';
+  document.getElementById('wordCount').textContent = '0 words';
+  document.getElementById('submitBtn').disabled = true;
+  document.getElementById('feedbackCard').classList.remove('show');
+  document.getElementById('nextBtn').style.display = 'inline-block';
+
+  startPrep();
+}
+
+function startPrep() {
+  phase = 'prep';
+  timeLeft = PREP_TIME;
+  totalTime = PREP_TIME;
+  updateTimerUI();
+  timer = setInterval(() => {
+    timeLeft--;
+    updateTimerUI();
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      startAnswer();
+    }
+  }, 1000);
+}
+
+function startAnswer() {
+  phase = 'answer';
+  timeLeft = ANSWER_TIME;
+  totalTime = ANSWER_TIME;
+
+  const input = document.getElementById('answerInput');
+  input.disabled = false;
+  input.placeholder = 'Type your answer here...';
+  input.focus();
+  document.getElementById('submitBtn').disabled = false;
+
+  updateTimerUI();
+  timer = setInterval(() => {
+    timeLeft--;
+    updateTimerUI();
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      submitAnswer();
+    }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  const display = document.getElementById('timerDisplay');
+  const fill = document.getElementById('timerBarFill');
+  const label = document.getElementById('timerLabel');
+  const mins = Math.floor(timeLeft / 60);
+  const secs = timeLeft % 60;
+  display.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+
+  const pct = (timeLeft / totalTime) * 100;
+  fill.style.width = pct + '%';
+
+  if (phase === 'prep') {
+    label.textContent = 'PREPARATION';
+    display.className = 'timer-display prep';
+    fill.className = 'timer-bar-fill prep';
+  } else {
+    label.textContent = 'ANSWER TIME';
+    if (timeLeft <= 10) {
+      display.className = 'timer-display danger';
+      fill.className = 'timer-bar-fill danger';
+    } else {
+      display.className = 'timer-display answer';
+      fill.className = 'timer-bar-fill answer';
+    }
+  }
+}
+
+function submitAnswer() {
+  clearInterval(timer);
+  phase = 'feedback';
+
+  const input = document.getElementById('answerInput');
+  input.disabled = true;
+  document.getElementById('submitBtn').disabled = true;
+
+  const answer = input.value.trim();
+  answers.push(answer);
+
+  const score = evaluateAnswer(answer, questions[currentIndex]);
+  scores.push(score);
+
+  showFeedback(score, answer);
+}
+
+function evaluateAnswer(answer, question) {
+  const words = answer.split(/\s+/).filter(w => w.length > 0).length;
+
+  let structure = 0, relevance = 0, depth = 0, communication = 0;
+
+  if (words === 0) {
+    return { structure: 0, relevance: 0, depth: 0, communication: 0, total: 0, words: 0 };
+  }
+
+  // Word count scoring
+  if (words >= 80) communication = 8;
+  else if (words >= 50) communication = 6;
+  else if (words >= 30) communication = 4;
+  else communication = 2;
+
+  // Check for structural indicators
+  const hasFirstly = /first|second|third|finally|moreover|furthermore|additionally/i.test(answer);
+  const hasBecause = /because|therefore|as a result|consequently|this led/i.test(answer);
+  const hasExample = /for example|for instance|specifically|such as|in my experience/i.test(answer);
+
+  structure = 3 + (hasFirstly ? 3 : 0) + (hasBecause ? 2 : 0) + (hasExample ? 2 : 0);
+  structure = Math.min(structure, 10);
+
+  // Relevance - check for category keywords
+  const categoryKeywords = {
+    "Motivation & Fit": ["oxford","saïd","said","mba","career","goal","programme","program","community","value"],
+    "Leadership": ["led","lead","team","decision","vision","strategy","initiative","managed","directed","inspired"],
+    "Teamwork & Collaboration": ["team","collaborate","together","group","support","shared","collective","trust","communicate"],
+    "Ethical Dilemmas": ["ethical","right","wrong","integrity","honest","transparent","moral","principle","values","fair"],
+    "Career & Goals": ["career","goal","future","plan","aspire","ambition","industry","role","position","impact"],
+    "Self-awareness & Growth": ["learn","grow","improve","weakness","strength","feedback","reflect","develop","change"],
+    "Business & Current Affairs": ["business","market","industry","company","economy","technology","innovation","strategy","trend"],
+    "Creative & Situational": ["solution","approach","plan","strategy","creative","innovative","first","then","implement"],
+    "Diversity & Global Perspective": ["culture","diverse","global","perspective","international","background","inclusive","different"]
+  };
+
+  const keywords = categoryKeywords[question.category] || [];
+  const lowerAnswer = answer.toLowerCase();
+  let keywordHits = keywords.filter(k => lowerAnswer.includes(k)).length;
+  relevance = Math.min(3 + keywordHits * 1.5, 10);
+
+  // Depth - sentence count and average sentence length
+  const sentences = answer.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
+  if (sentences >= 4 && words >= 60) depth = 8;
+  else if (sentences >= 3 && words >= 40) depth = 6;
+  else if (sentences >= 2) depth = 4;
+  else depth = 2;
+
+  if (hasExample) depth = Math.min(depth + 2, 10);
+
+  const total = Math.round((structure + relevance + depth + communication) / 4 * 10) / 10;
+
+  return { structure: Math.round(structure), relevance: Math.round(relevance), depth: Math.round(depth), communication: Math.round(communication), total, words };
+}
+
+function showFeedback(score, answer) {
+  const card = document.getElementById('feedbackCard');
+  card.classList.add('show');
+
+  document.getElementById('scoreRow').innerHTML = `
+    <div class="score-item"><div class="label">Structure</div><div class="value">${score.structure}/10</div></div>
+    <div class="score-item"><div class="label">Relevance</div><div class="value">${score.relevance}/10</div></div>
+    <div class="score-item"><div class="label">Depth</div><div class="value">${score.depth}/10</div></div>
+    <div class="score-item"><div class="label">Communication</div><div class="value">${score.communication}/10</div></div>
+  `;
+
+  let feedbackHtml = '';
+  const tips = [];
+
+  if (score.words === 0) {
+    feedbackHtml = '<strong>No answer provided.</strong> In a real interview, leaving a question blank is a missed opportunity.';
+    tips.push('Even a brief answer is better than no answer.');
+    tips.push('Use the preparation time to outline 2-3 key points.');
+  } else {
+    feedbackHtml = `<strong>Word count:</strong> ${score.words} words. `;
+    if (score.total >= 8) {
+      feedbackHtml += 'Excellent response! Well-structured with strong relevance.';
+    } else if (score.total >= 6) {
+      feedbackHtml += 'Good response with room for improvement.';
+    } else if (score.total >= 4) {
+      feedbackHtml += 'Adequate response, but needs more development.';
+    } else {
+      feedbackHtml += 'This response needs significant improvement.';
+    }
+
+    if (score.structure < 6) tips.push('Use signal words like "First," "Second," "For example" to improve structure.');
+    if (score.relevance < 6) tips.push('Tie your answer more directly to the specific question being asked.');
+    if (score.depth < 6) tips.push('Provide concrete examples and specific details from your experience.');
+    if (score.communication < 6) tips.push('Aim for at least 60-80 words to demonstrate thorough thinking.');
+    if (score.total >= 7) tips.push('Strong answer — consider adding a forward-looking conclusion to elevate further.');
+  }
+
+  document.getElementById('feedbackText').innerHTML = feedbackHtml;
+  const tipsList = document.getElementById('tipsList');
+  tipsList.innerHTML = tips.map(t => `<li>${t}</li>`).join('');
+
+  if (currentIndex >= 99) {
+    document.getElementById('nextBtn').textContent = 'View Results →';
+  }
+}
+
+function nextQuestion() {
+  currentIndex++;
+  if (currentIndex >= 100) {
+    showResults();
+    return;
+  }
+  loadQuestion();
+}
+
+function showSkipModal() {
+  document.getElementById('skipModal').classList.add('show');
+}
+
+function hideSkipModal() {
+  document.getElementById('skipModal').classList.remove('show');
+}
+
+function confirmSkip() {
+  hideSkipModal();
+  clearInterval(timer);
+  answers.push('');
+  scores.push({ structure: 0, relevance: 0, depth: 0, communication: 0, total: 0, words: 0 });
+  currentIndex++;
+  if (currentIndex >= 100) {
+    showResults();
+    return;
+  }
+  loadQuestion();
+}
+
+function showResults() {
+  document.getElementById('interviewScreen').classList.remove('active');
+  document.getElementById('resultScreen').classList.add('active');
+  document.getElementById('headerProgress').style.display = 'none';
+
+  const avgTotal = scores.reduce((s, sc) => s + sc.total, 0) / scores.length;
+  const avgStructure = scores.reduce((s, sc) => s + sc.structure, 0) / scores.length;
+  const avgRelevance = scores.reduce((s, sc) => s + sc.relevance, 0) / scores.length;
+  const avgDepth = scores.reduce((s, sc) => s + sc.depth, 0) / scores.length;
+  const avgComm = scores.reduce((s, sc) => s + sc.communication, 0) / scores.length;
+
+  document.getElementById('finalScore').textContent = avgTotal.toFixed(1);
+
+  const dims = [
+    { label: 'Structure & Organisation', score: avgStructure },
+    { label: 'Relevance & Focus', score: avgRelevance },
+    { label: 'Depth & Insight', score: avgDepth },
+    { label: 'Communication & Clarity', score: avgComm },
+  ];
+
+  document.getElementById('dimensionScores').innerHTML = dims.map(d => `
+    <div class="dim-item">
+      <div class="dim-label">${d.label}</div>
+      <div class="dim-bar"><div class="dim-fill" style="width:${d.score * 10}%"></div></div>
+      <div class="dim-score">${d.score.toFixed(1)} / 10</div>
+    </div>
+  `).join('');
+
+  // Category breakdown
+  const catScores = {};
+  questions.forEach((q, i) => {
+    if (!catScores[q.category]) catScores[q.category] = [];
+    if (scores[i]) catScores[q.category].push(scores[i].total);
+  });
+
+  let summaryHtml = '<strong>Category Breakdown:</strong><br><br>';
+  for (const [cat, arr] of Object.entries(catScores)) {
+    const avg = arr.reduce((a, b) => a + b, 0) / arr.length;
+    summaryHtml += `${cat}: <strong>${avg.toFixed(1)}/10</strong><br>`;
+  }
+
+  const answered = scores.filter(s => s.words > 0).length;
+  const skipped = scores.filter(s => s.words === 0).length;
+  summaryHtml += `<br>Questions answered: <strong>${answered}</strong> | Skipped: <strong>${skipped}</strong>`;
+
+  if (avgTotal >= 8) {
+    summaryHtml += '<br><br>Outstanding performance! You are well-prepared for the real Kira interview.';
+  } else if (avgTotal >= 6) {
+    summaryHtml += '<br><br>Good performance with some areas to polish. Focus on weaker categories.';
+  } else if (avgTotal >= 4) {
+    summaryHtml += '<br><br>Needs improvement. Practice structuring answers using the STAR method.';
+  } else {
+    summaryHtml += '<br><br>Significant preparation needed. Review the question categories and practice daily.';
+  }
+
+  document.getElementById('resultSummary').innerHTML = summaryHtml;
+}
+
+function reviewAnswers() {
+  const section = document.getElementById('reviewSection');
+  section.style.display = 'block';
+
+  let html = '';
+  questions.forEach((q, i) => {
+    if (i >= answers.length) return;
+    const s = scores[i];
+    html += `
+      <div style="background:var(--card-bg);border:1px solid var(--border);border-radius:12px;padding:24px;margin-bottom:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <span style="color:var(--gold);font-family:'Helvetica Neue',sans-serif;font-size:13px;">Q${q.id} — ${q.category}</span>
+          <span style="color:var(--text-muted);font-family:'Helvetica Neue',sans-serif;font-size:13px;">Score: ${s.total}/10</span>
+        </div>
+        <p style="color:#fff;font-size:15px;margin-bottom:12px;">${q.text}</p>
+        <p style="color:var(--text-muted);font-size:14px;font-family:'Helvetica Neue',sans-serif;line-height:1.6;">
+          ${answers[i] ? answers[i] : '<em>Skipped</em>'}
+        </p>
+      </div>
+    `;
+  });
+
+  section.innerHTML = html;
+  section.scrollIntoView({ behavior: 'smooth' });
+}
+
+// Word count
+document.getElementById('answerInput').addEventListener('input', function() {
+  const words = this.value.trim().split(/\s+/).filter(w => w.length > 0).length;
+  document.getElementById('wordCount').textContent = words + ' words';
+});
+
+// Keyboard shortcut: Enter to submit (Shift+Enter for newline)
+document.getElementById('answerInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey && phase === 'answer') {
+    e.preventDefault();
+    submitAnswer();
+  }
+});
+</script>
+</body>
+</html>
